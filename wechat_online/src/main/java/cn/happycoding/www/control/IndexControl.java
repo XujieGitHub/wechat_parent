@@ -17,6 +17,7 @@ public class IndexControl {
 
     @RequestMapping(value = "/to_index")
     public String toIndex(){
+        //dsdsdsdsdsds
         return "public/index";
     }
 
