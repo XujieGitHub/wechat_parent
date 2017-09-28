@@ -1,7 +1,7 @@
 package cn.happycoding.www.menuenty;
 
 /**
- * ©2017-2018 中卡科技 版权所有
+ * Copyright © 2017优质的代码创造美好的生活. All rights reserved.
  * @motto 我坚信，优质代码才能创造好的程序
  * @description 点击型菜单
  * @className ClickButton

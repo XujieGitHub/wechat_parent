@@ -25,18 +25,11 @@ public class MsgDispatcher {
             if("1".equals(map.get("Content"))){
                 msg.append("非常抱歉，工程师正在研发中！");
             }else if("2".equals(map.get("Content"))){
-                msg.append("打开手机蓝牙！").append("\n");
-                msg.append("搜索蓝牙设备！").append("\n");
-                msg.append("连接蓝牙设备！").append("\n");
-                msg.append("连接成功！").append("\n");
+
             }else if("3".equals(map.get("Content"))){
                 msg.append("非常抱歉，工程师正在研发中！").append("\n");
             }else{
-                msg.append("你好，这里是乐校通公众号！").append("\n");
-                msg.append("现支持如下操作：").append("\n");
-                msg.append("1：查询账户余额").append("\n");
-                msg.append("2：蓝牙水控使用教程").append("\n");
-                msg.append("3：声波充值教程");
+
             }
             txtmsg.setContent(msg.toString());
             return MessageUtil.textMessageToXml(txtmsg);

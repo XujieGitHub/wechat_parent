@@ -36,10 +36,9 @@ public class EventDispatcher {
         }
         if(map.get("EventKey").equals(MenuKey.BIND_STUDENT_ID)){
             System.out.println(map);
-            System.out.println("==============这是点击绑定学生账号事件！");
         }
         if(map.get("EventKey").equals(MenuKey.USE_BLUETOOTH_WATER)){
-            System.out.println("==============这是点击使用蓝牙水控事件！");
+
         }
         if(map.get("EventKey").equals(MenuKey.HELP_DOC)){
             System.out.println("==============这是点击帮助文档事件！");

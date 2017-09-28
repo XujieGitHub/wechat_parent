@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Copyright©2017-2018 中卡科技 版权所有. All rights reserved.
+ * Copyright © 2017优质的代码创造美好的生活. All rights reserved.
  * @description 定时获取access_token
  * @version V1.0.0
  * @motto
