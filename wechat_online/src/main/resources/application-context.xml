@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <context:property-placeholder location="classpath:db.properties" />
+    <context:component-scan base-package="cn.happycoding.www"> <!--配置扫描路径-->
+        <context:exclude-filter
+                type="annotation"
+                expression="org.springframework.web.bind.annotation.ControllerAdvice" />
+        <context:exclude-filter
+                type="annotation"
+                expression="org.springframework.web.bind.annotation.RestController" />
+    </context:component-scan>
+    <!-- c3p0连接池配置 -->
+    <bean
+            id="dataSource"
+            class="com.mchange.v2.c3p0.ComboPooledDataSource"
+            destroy-method="close"
+            p:driverClass="${mysql.jdbc.driverClass}"
+            p:jdbcUrl="${mysql.jdbc.jdbcUrl}"
+            p:user="${mysql.jdbc.user}"
+            p:password="${mysql.jdbc.password}"
+            p:loginTimeout="${mysql.jdbc.loginTimeout}"
+            p:initialPoolSize="${mysql.jdbc.initialPoolSize}"
+            p:minPoolSize="${mysql.jdbc.minPoolSize}"
+            p:acquireIncrement="${mysql.jdbc.acquireIncrement}"
+            p:maxPoolSize="${mysql.jdbc.maxPoolSize}"
+            p:maxStatements="${mysql.jdbc.maxStatements}"
+            p:idleConnectionTestPeriod="${mysql.jdbc.idleConnectionTestPeriod}" />
+    <!-- mybatis的sqlSessionFactory -->
+    <bean
+            id="sqlSessionFactoryBean"
+            class="org.mybatis.spring.SqlSessionFactoryBean"
+            p:configLocation="classpath:mybatis-config.xml"
+            p:dataSource-ref="dataSource" />
+    <!-- mapper批量扫描(java和xml需在同一目录且名称一致) -->
+    <!-- basePackage多个包用逗号(,)分隔 -->
+    <bean
+            id="mapperScannerConfigurer"
+            class="org.mybatis.spring.mapper.MapperScannerConfigurer"
+            p:basePackage="cn.happycoding.www.dao"
+            p:sqlSessionFactoryBeanName="sqlSessionFactoryBean" />
+    <!-- 配置事务管理器 -->
+    <bean
+            id="transactionManager"
+            class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+            p:dataSource-ref="dataSource" />
+    <!-- 启用事务注解 -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    <!-- 配置事务属性 -->
+    <!-- propagation:REQUIRES(默认的)：如果有事务在运行，当前的方法就在这个事务内运行，否则就启动一个新的事务并在自己的事务内运行 -->
+    <!-- propagation:REQUIRES_NEW：当前的事务必须启动新事务，并在它自己的事务内运行，如果有事务正在运行，应该将它挂起 -->
+    <!-- read-only="true"在查询语句中设置只读 -->
+    <tx:advice
+            id="txAdvice"
+            transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="insert*" />
+            <tx:method name="save*" />
+            <tx:method name="delete*" />
+            <tx:method name="remove*" />
+            <tx:method name="modify*" />
+            <tx:method name="update*" />
+            <!-- 以下查询统一设置只读，5秒超时(以get,load,find,search,select等开头) -->
+            <!-- 如果查询超过五秒，说明程序需要优化，太久导致用户交互差 -->
+            <!--  <tx:method name="get*" read-only="true" timeout="100" />
+                  <tx:method name="load*" read-only="true" timeout="5" />
+                  <tx:method name="find*" read-only="true" timeout="5" />
+                  <tx:method name="search*" read-only="true" timeout="5" />
+                  <tx:method name="select*" read-only="true" timeout="20" propagation="SUPPORTS" /> -->
+            <!-- 没有以上面方法名开头的，统一不开事务 -->
+        </tx:attributes>
+    </tx:advice>
+    <!-- 配置关联事务切入点和事务属性 -->
+    <aop:config>
+        <aop:advisor
+                advice-ref="txAdvice"
+                pointcut="execution(* cn.happycoding.www.service.*.*(..))" />
+    </aop:config>
+</beans>

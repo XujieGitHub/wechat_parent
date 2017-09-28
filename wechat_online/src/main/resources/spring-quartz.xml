@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+
+    <!--1.通过spring自定义一个定时类（就是你需要定时的类），spring的IOC原理-->
+    <bean id="getTokenPusherd" class="cn.happycoding.www.quartz.WeChatTask"></bean>
+    <!--2.加载定时的类和方法-->
+    <bean id="getTokenJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="getTokenPusherd"></property>
+        <property name="targetMethod" value="getToken"></property>
+        <!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+        <property name="concurrent" value="false"></property>
+    </bean>
+
+    <!--3.设置定时器启动时间-->
+    <bean id="getTokenCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="getTokenJobDetail"></property>
+        <property name="cronExpression" value="0 0 0/2 * * ?"></property><!--两小时触发一次-->
+        <!--0 0/1 * * * ? 一分钟触发一次（测试用到）-->
+        <!--0 0 0/2 * * ? 两小时触发一次 -->
+        <!--<property name="cronExpression" value="0 0/60 * * * ?"></property>--><!--20分钟触发一次-->
+    </bean>
+
+    <!--4.加载定时器-->
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="getTokenCronTrigger"></ref>
+            </list>
+        </property>
+    </bean>
+
+</beans>
